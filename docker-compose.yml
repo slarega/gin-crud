@@ -1,0 +1,34 @@
+networks:
+  backend:
+
+services:
+  auth-service:
+    container_name: auth-service
+    build:
+      context: ./auth-service
+      dockerfile: ./Dockerfile
+    ports:
+      - 8888:8888
+    depends_on:
+      - db_auth
+    restart: always
+    networks:
+      - backend
+
+  db_auth:
+    image: postgres:16.4
+    container_name: db_auth
+    ports:
+      - 5435:5432
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password123
+      POSTGRES_DB: db_auth
+    volumes:
+      - db-auth-data:/var/lib/postgresql/db_auth_data
+    restart: always
+    networks:
+      - backend
+
+volumes:
+  db-auth-data:

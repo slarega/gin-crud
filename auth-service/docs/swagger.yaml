@@ -1,0 +1,225 @@
+basePath: /api
+definitions:
+  models.ClientTokens:
+    properties:
+      access_token:
+        example: access
+        type: string
+      refresh_token:
+        example: refresh
+        type: string
+    type: object
+  models.UserForm:
+    properties:
+      email:
+        example: user@mail.com
+        maxLength: 100
+        type: string
+      password:
+        example: "123456"
+        maxLength: 15
+        minLength: 5
+        type: string
+    type: object
+  response.Response:
+    properties:
+      data: {}
+    type: object
+  response.UserOkResponse:
+    properties:
+      data:
+        $ref: '#/definitions/response.UserResponse'
+    type: object
+  response.UserResponse:
+    properties:
+      Email:
+        type: string
+      GUID:
+        type: integer
+      Password:
+        type: string
+    type: object
+  response.UsersOkResponse:
+    properties:
+      data:
+        items:
+          $ref: '#/definitions/response.UserResponse'
+        type: array
+    type: object
+host: localhost:8888
+info:
+  contact: {}
+  description: API на Go с использованием Gin и Gorm
+  title: CRUD API
+  version: "1.0"
+paths:
+  /auth/acc-token:
+    post:
+      description: Получение данных access токена
+      parameters:
+      - description: Токены пользователя
+        in: body
+        name: tokens
+        required: true
+        schema:
+          $ref: '#/definitions/models.ClientTokens'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+      summary: Проверка access токена
+      tags:
+      - auth
+  /auth/login:
+    post:
+      description: Возвращает пару access_token и refresh_token в cookie и Response
+        body
+      parameters:
+      - description: Данные пользователя
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/models.UserForm'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.ClientTokens'
+      summary: Авторизация
+      tags:
+      - auth
+  /auth/logout:
+    post:
+      description: Удаляет пару access_token и refresh_token в cookie
+      parameters:
+      - description: Данные пользователя
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/models.UserForm'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.ClientTokens'
+      summary: Выход из системы
+      tags:
+      - auth
+  /auth/refresh-token:
+    post:
+      description: Обновление пары access_token и refresh_token в cookie и Response
+        body
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+      summary: Обновление токенов
+      tags:
+      - auth
+  /auth/registration:
+    post:
+      description: Регистрация пользователя
+      parameters:
+      - description: Данные пользователя
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/models.UserForm'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.UserOkResponse'
+      summary: Регистрация
+      tags:
+      - auth
+  /user:
+    get:
+      description: Возвращает список пользователей
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.UsersOkResponse'
+      summary: Получить всех пользователей
+      tags:
+      - user
+  /user/{userId}:
+    delete:
+      description: Удалить пользователя по id
+      parameters:
+      - description: User id
+        in: path
+        name: userId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.UserOkResponse'
+      summary: Удалить пользователя
+      tags:
+      - user
+    get:
+      description: Возвращает пользователя по id
+      parameters:
+      - description: User id
+        in: path
+        name: userId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.UserOkResponse'
+      summary: Получить пользователя
+      tags:
+      - user
+    patch:
+      description: Обновить данные пользователя по id
+      parameters:
+      - description: User id
+        in: path
+        name: userId
+        required: true
+        type: string
+      - description: Данные пользователя
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/models.UserForm'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.UserOkResponse'
+      summary: Обновить данные пользователя
+      tags:
+      - user
+swagger: "2.0"
